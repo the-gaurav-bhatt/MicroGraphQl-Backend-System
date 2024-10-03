@@ -2,9 +2,7 @@ You are absolutely correct! I apologize for providing the README files without t
 
 Here are the README.md files in the correct Markdown format:
 
-## User Service README.md
-
-# User Service
+## User Service
 
 **Description:**
 
@@ -69,9 +67,7 @@ The User Service exposes a GraphQL API with the following operations:
   - `user.created`: When a new user is registered.
   - `user.updated`: When a user profile is updated.
 
-## Product Service README.md
-
-# Product Service
+## Product Service
 
 **Description:**
 
@@ -122,8 +118,6 @@ The Product Service exposes a GraphQL API with the following operations:
 **Event Handling:**
 
 - The Product Service listens for the `user.created` event from RabbitMQ. You can add custom logic to handle this event in the `handleUserRegistered` function (e.g., send a welcome email to new users).
-
-## Order Service README.md
 
 # Order Service
 
@@ -186,8 +180,6 @@ The Order Service exposes a GraphQL API with the following operations:
 You are absolutely right! I missed a crucial detail about the Apollo Gateway setup. The gateway configuration itself, along with its dependencies, should be documented in its own README.md file.
 
 Let's create a `README.md` file for the Apollo Gateway:
-
-## GraphQL Gateway README.md
 
 # GraphQL Gateway
 
