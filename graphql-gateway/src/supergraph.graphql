@@ -1,0 +1,124 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+type AuthPayload
+  @join__type(graph: USER)
+{
+  token: String
+  user: User!
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  ORDER @join__graph(name: "order", url: "http://localhost:4003/graphql")
+  PRODUCT @join__graph(name: "product", url: "http://localhost:4002/graphql")
+  USER @join__graph(name: "user", url: "http://localhost:4001/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Mutation
+  @join__type(graph: ORDER)
+  @join__type(graph: PRODUCT)
+  @join__type(graph: USER)
+{
+  placeOrder(userId: ID!, products: [OrderProductInput!]!, totalAmount: Float): Order! @join__field(graph: ORDER)
+  createProduct(name: String!, description: String, price: Float!, inventory: Int!): Product @join__field(graph: PRODUCT)
+  updateInventory(productId: ID!, newInventory: Int!): Product @join__field(graph: PRODUCT)
+  registerUser(username: String!, email: String!, password: String!): AuthPayload! @join__field(graph: USER)
+  loginUser(email: String!, password: String!): AuthPayload @join__field(graph: USER)
+  updateUserProfile(id: ID!, username: String!, email: String!): User! @join__field(graph: USER)
+}
+
+type Order
+  @join__type(graph: ORDER, key: "id")
+  @join__type(graph: USER, key: "id")
+{
+  id: ID!
+  userID: ID! @join__field(graph: ORDER)
+  products: [OrderProduct!]! @join__field(graph: ORDER)
+  totalAmount: Float! @join__field(graph: ORDER)
+  status: String! @join__field(graph: ORDER)
+  createdAt: String! @join__field(graph: ORDER)
+}
+
+type OrderProduct
+  @join__type(graph: ORDER)
+{
+  productId: ID!
+  quantity: Int!
+  price: Float!
+}
+
+input OrderProductInput
+  @join__type(graph: ORDER)
+{
+  productId: ID!
+  quantity: Int!
+  price: Float!
+}
+
+type Product
+  @join__type(graph: ORDER, key: "id", resolvable: false)
+  @join__type(graph: PRODUCT, key: "id")
+{
+  id: ID! @join__field(graph: ORDER, external: true) @join__field(graph: PRODUCT)
+  name: String! @join__field(graph: PRODUCT)
+  description: String @join__field(graph: PRODUCT)
+  price: Float! @join__field(graph: PRODUCT)
+  inventory: Int! @join__field(graph: PRODUCT)
+}
+
+type Query
+  @join__type(graph: ORDER)
+  @join__type(graph: PRODUCT)
+  @join__type(graph: USER)
+{
+  orders: [Order] @join__field(graph: ORDER)
+  order(id: ID!): Order @join__field(graph: ORDER)
+  product(id: ID!): Product @join__field(graph: PRODUCT)
+  products: [Product] @join__field(graph: PRODUCT)
+  users: [User] @join__field(graph: USER)
+  user(id: ID!): User @join__field(graph: USER)
+}
+
+type User
+  @join__type(graph: ORDER, key: "id", resolvable: false)
+  @join__type(graph: USER, key: "id")
+{
+  id: ID! @join__field(graph: ORDER, external: true) @join__field(graph: USER)
+  username: String! @join__field(graph: USER)
+  email: String! @join__field(graph: USER)
+}

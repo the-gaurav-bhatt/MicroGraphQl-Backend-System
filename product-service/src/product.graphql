@@ -1,0 +1,25 @@
+type Product @key(fields: "id") {
+  id: ID!
+  name: String!
+  description: String
+  price: Float!
+  inventory: Int!
+}
+# type User @key(fields: "id", resolvable: false) {
+#   # resolvalbe:false means that this subgraph doesn't define a reference resolver for this entity.
+#   id: ID! @external
+# }
+type Query {
+  product(id: ID!): Product
+  products: [Product]
+}
+
+type Mutation {
+  createProduct(
+    name: String!
+    description: String
+    price: Float!
+    inventory: Int!
+  ): Product
+  updateInventory(productId: ID!, newInventory: Int!): Product
+}

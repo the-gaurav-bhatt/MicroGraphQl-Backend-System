@@ -1,0 +1,38 @@
+type Order @key(fields: "id") {
+  id: ID!
+  userID: ID!
+  products: [OrderProduct!]!
+  totalAmount: Float!
+  status: String!
+  createdAt: String!
+}
+
+type User @key(fields: "id", resolvable: false) {
+  id: ID! @external
+}
+
+type Product @key(fields: "id", resolvable: false) {
+  id: ID! @external
+}
+
+type OrderProduct {
+  productId: ID!
+  quantity: Int!
+  price: Float!
+}
+type Query {
+  orders: [Order]
+  order(id: ID!): Order
+}
+type Mutation {
+  placeOrder(
+    userId: ID!
+    products: [OrderProductInput!]!
+    totalAmount: Float
+  ): Order!
+}
+input OrderProductInput {
+  productId: ID!
+  quantity: Int!
+  price: Float!
+}
